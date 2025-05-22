@@ -5,6 +5,26 @@ Plays the requested song without a console output
 # Importing some modules
 
 import requests
+
+import os
+import ctypes
+
+# Get the absolute path to the current script (in the subfolder)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go one level up to the main/root folder
+root_dir = os.path.dirname(current_dir)
+
+# Define VLC path assuming it's directly in the root folder
+vlc_path = root_dir  # or os.path.join(root_dir, "vlc") if inside a folder named "vlc"
+
+# Add to system path at runtime
+os.environ["PATH"] = vlc_path + os.pathsep + os.environ["PATH"]
+
+# Load the DLL manually
+ctypes.CDLL(os.path.join(vlc_path, "libvlc.dll"))
+
+# Now import VLC
 import vlc
 
 # Configuring Yt-dlp
