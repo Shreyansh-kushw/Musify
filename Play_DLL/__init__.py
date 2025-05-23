@@ -5,7 +5,6 @@ Plays the requested song without a console output
 # Importing some modules
 
 import requests
-
 import os
 import ctypes
 
@@ -16,15 +15,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
 
 # Define VLC path assuming it's directly in the root folder
-vlc_path = root_dir  # or os.path.join(root_dir, "vlc") if inside a folder named "vlc"
+vlc_path = root_dir  
 
 # Add to system path at runtime
 os.environ["PATH"] = vlc_path + os.pathsep + os.environ["PATH"]
 
-# Load the DLL manually
+# Load the DLL manually. This was done to avoid the error Libvlc.dll not found.
 ctypes.CDLL(os.path.join(vlc_path, "libvlc.dll"))
 
-# Now import VLC
+# import VLC
 import vlc
 
 # Configuring Yt-dlp
@@ -56,10 +55,10 @@ song_names = []
 currently_playing = ""
 paused = False
 
-# --------------------- All the main Functional stuff ---------------------#
+# --------------------- All the main Functions ---------------------#
 
 
-# ========= All the webscraping stuff ===== #
+# ========= All the webscraping funtions ===== #
 
 def get_song_url(topic):
 
@@ -68,7 +67,7 @@ def get_song_url(topic):
     """
 
     url = 'https://www.youtube.com/results?q=' + topic + " song lyrics"
-    print(url)
+    # print(url)
     count = 0
     cont = requests.get(url)
     data = cont.content
@@ -98,8 +97,6 @@ def url_extracter(song_name):
     
     return song_url
 
-
-
 # ========= All the functions that play the song ===== #
 def play_by_song_url(url):
     global player, val
@@ -108,38 +105,35 @@ def play_by_song_url(url):
     Function to play song from video/song URL....
     """
     try:
-       player.stop()
+       player.stop() #stops the player if already playing
     except:
         pass
     
     player = vlc.MediaPlayer(url)  
 
-    player.play()
+    player.play() #plays the song
     
-
-
-
 def play_by_yt_url(yt_url):
     
     # Function to play song from youtube video URL
 
     
-    play_by_song_url(url_extracter(yt_url))
-    print(play_by_song_url(url_extracter(yt_url)))
+    play_by_song_url(url_extracter(yt_url)) #extracts the song url from the youtube url and feeds to play_by_song_url function
+    # print(play_by_song_url(url_extracter(yt_url)))
 
 
 def play_by_songName(song_name):
 
     """
     Function which will take song name as argument and then find the YouTube video url of that song;
-    After that it find the video URL of the Song then plays it.....
+    After that it find the video URL of the Song then play it.....
     """
 
     url_of_song = get_song_url(song_name)
     url_of_song = url_of_song.split("""\\""")[0]
     play_by_yt_url(url_of_song)
  
-def play_by_file(file_path):
+def play_by_file(file_path): #Can play a song/audio from a file path
     play_by_song_url(file_path)
 
 # ========= All the pause, resume, rewind etc type of functions ===== #
@@ -155,19 +149,20 @@ def pause_song():
 
 
 def next_():
+    '''Plays the next song in queue'''
     pass
 
 def previous():
+    '''Plays the previous song in queue'''
     seek(0.0)
 
 
 
 def seek(pos):
-    # here in the arguments we are supposed to give the seconds to which w have to seek. lIKE IF WE HAVE TO SEEK TO 20 SECONDS THEN WE HAVE TO GIVE 20 IN THE ARGUMENTS
+    '''Seeks the player to a specific position'''
+  
+    # here in the arguments we are supposed to give the seconds to which we have to seek. lIKE IF WE HAVE TO SEEK TO 20 SECONDS THEN WE HAVE TO GIVE 20 IN THE ARGUMENTS
+    
     global player
     player.set_position(pos)
 # ---------------------------------------------------------------------------#
-
-# Testing Area
-
-
