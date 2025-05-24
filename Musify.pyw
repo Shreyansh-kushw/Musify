@@ -18,6 +18,7 @@ import customtkinter
 import yt_dlp
 from time import sleep
 import time
+import sys
 
 class Musify():
 
@@ -51,7 +52,7 @@ class Musify():
             pass
 
         self.window.destroy() # closes the payer window
-        exit() # exis the code
+        sys.exit() # exis the code
     
     
     #creating functions that will add the temporary text in the search box
@@ -75,7 +76,7 @@ class Musify():
         """ 
         Function to start a new thread that will download the song        
         """
-        DownloadThread=Thread(target=self.start_download)
+        DownloadThread=Thread(target=self.start_download, daemon=True)
         DownloadThread.start()
     
     def start_download(self):  
@@ -100,14 +101,14 @@ class Musify():
 
         """ Starts a new thread that will play the song """
 
-        self.play_thread=Thread(target=self.input_manager)
+        self.play_thread=Thread(target=self.input_manager, daemon=True)
         self.play_thread.start()
     
     def progress_manager(self):
 
         """ Starts a new thread that will manage the progress bar. """
 
-        self.progress_thread = Thread(target=self.ProgressBar)
+        self.progress_thread = Thread(target=self.ProgressBar, daemon=True)
         self.progress_thread.start()
 
     def pause_resumer(self):
@@ -135,7 +136,7 @@ class Musify():
         
         self.play_button.configure(image=self.play_photo) #Setting the photo of the Play button
 
-        pause_thread = Thread(target=Play_DLL.pause_song)
+        pause_thread = Thread(target=Play_DLL.pause_song, daemon=True)
         pause_thread.start()
 
 
@@ -170,39 +171,6 @@ class Musify():
         except:
             pass
 
-    def get_clean_song_name(self, url):
-
-        '''Function that will get a clean song name to display in the Song label'''
-
-        self.ydl_opts = {
-            'quiet': True,
-            'skip_download': True,
-            'nocheckcertificate': True,
-            'forcejson': True,
-            'extract_flat': True,
-        }
-    
-        with yt_dlp.YoutubeDL(self.ydl_opts) as ydl:
-            self.info = ydl.extract_info(url, download=False)
-
-        # Extract metadata
-        self.track = self.info.get('track')
-        self.artist = self.info.get('artist')
-        self.title = self.info.get('title')
-
-        #Testing 
-        print(self.track)
-        print(self.artist)
-        print(self.title)
-
-        if self.track and self.artist:
-            self.clean_name = f"{self.track} - {self.artist}"
-        else:
-            # Fallback to raw title if metadata is missing
-            self.clean_name = self.title
-
-        return self.clean_name
-
     def input_manager(self):
 
         """
@@ -222,9 +190,9 @@ class Musify():
 
         self.currently_playing = self.token_entry.get()+" song lyrics" #currently playing song
 
-        print(self.SongName)
+        # print(self.SongName)
         
-        self.SongNameLabel["text"] = self.get_clean_song_name(self.url) # sets the song label
+        self.SongNameLabel["text"] = self.SongName # sets the song label
         self.add_to_queue(self.currently_playing) # adds the current song to the queue
 
         self.slider.set(0) # initial position of the progress bar
